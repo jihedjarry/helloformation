@@ -54,7 +54,7 @@ pipeline{
                         }
                 }
 		
-		stage('Deploy our image') {
+		stage('DOCKER - Build/Push registry') {
 			agent any
 			steps{
 				script {
@@ -66,7 +66,7 @@ pipeline{
          	        	}
                 	}	
 		}
-		stage('Test') {
+		stage('DOCKER - check registry') {
 			agent any
                         steps{
                                 script {
