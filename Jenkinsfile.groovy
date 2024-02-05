@@ -87,7 +87,7 @@ pipeline{
             					colorized: true,
             					playbook: "playbook.yml",
             					hostKeyChecking: false,
-            					inventory: "env/dev/hosts",
+            					inventory: "env/dev/hosts.yml",
             					extras: "-u jarry -e 'image=$registry:${IMAGE_TAG}' -e 'version=${IMAGE_TAG}'"
             				)
 				}
