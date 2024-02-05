@@ -64,7 +64,7 @@ pipeline{
          	        	}
                 	}	
 		}
-		stage('Deploy our image') {
+		stage('Test') {
                         steps{
                                 script {
                                 	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'myregistry_login',usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
