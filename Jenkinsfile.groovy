@@ -1,7 +1,7 @@
 pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
-		IMAGE_TAG = "1.1"
+		IMAGE_TAG = "latest"
 		registry = "192.168.1.38:5000/helloworld"
 		registryCredential = 'myregistry_login'
 	}
@@ -12,7 +12,7 @@ pipeline{
 			agent any
 			steps {
 				script {
-				sh 'docker build -t jihedjarry51/${IMAGE_NAME}:${IMAGE_TAG} .'
+				sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
 
 			
 				}
@@ -24,7 +24,7 @@ pipeline{
                         steps {
                                 script { 
                                 sh '''
-					docker run -d -p 80:5000 -e PORT=5000 --name ${IMAGE_NAME} jihedjarry51/${IMAGE_NAME}:${IMAGE_TAG}
+					docker run -d -p 80:5000 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
 					sleep 5
 				'''
 				}
