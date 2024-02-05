@@ -55,13 +55,10 @@ pipeline{
                 }
 
 		stage('DOCKER - Build/Push registry') {
-                        agent any
-                        steps {
-                                docker.withRegistry('http://192.168.1.64:5000', 'myregistry_login') {
-                                def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
-                                customImage.push()
-         	               }
-                        }
+                docker.withRegistry('http://192.168.1.64:5000', 'myregistry_login') {
+                	def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
+                        customImage.push()
+         	        }
                 }
 	}
 }
