@@ -57,8 +57,8 @@ pipeline{
 		
     		stage('DOCKER - Build/Push registry') {
       			docker.withRegistry('http://192.168.1.64:5000', 'myregistry_login') {
-			def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
-        		customImage.push()
+				def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
+        			customImage.push()
 	 		}
       			sh "docker rmi $imageName_Registry:${IMAGE_TAG}"
     		}
