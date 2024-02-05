@@ -62,6 +62,7 @@ pipeline{
                 				def customImage = docker.build("$registry:${IMAGE_TAG}")
                         			customImage.push()
 					}
+					sh "docker rmi $registry:${IMAGE_TAG}"
          	        	}
                 	}	
 		}
