@@ -55,6 +55,7 @@ pipeline{
                 }
 		
 		stage('Deploy our image') {
+			agent any
 			steps{
 				script {
 					docker.withRegistry( 'http://192.168.1.38:5000', registryCredential ) {
@@ -65,6 +66,7 @@ pipeline{
                 	}	
 		}
 		stage('Test') {
+			agent any
                         steps{
                                 script {
                                 	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'myregistry_login',usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
