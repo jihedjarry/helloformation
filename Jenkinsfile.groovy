@@ -55,47 +55,23 @@ pipeline{
                         }
                 }
 
-		stage('Push image in staging  and deploy it') {
-                	when {
-				expression {GIT_BRANCH == 'origin/master'}
-			}
-			agent any
-			environment {
-				HEROKU_API_KEY = credentials('heroku_api_key')
-			}
-			steps {
-                                script {
-                                        sh '''
-                                                heroku container:login
-                                                heroku create $STAGING || echo "project already exist"
-                                                heroku container:push -a $STAGING web
-                                                heroku container:release -a $STAGING web
-                                        '''
-                                }
-                        }
+		def imageName_Registry='192.168.1.64:5000/myapp'
 
-                }
+    		stage('DOCKER - Build/Push registry'){
+      			docker.withRegistry('http://192.168.1.64:5000', 'myregistry_login') {
+			def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
+        		customImage.push()
+ 		}
+      		sh "docker rmi $imageName_Registry:${IMAGE_TAG}"
+    		}
 
-		stage('Push image in production and deploy it') {
-                        when {
-                                expression {GIT_BRANCH == 'origin/master'}
-                        }
-                        agent any
-                        environment {
-                                HEROKU_API_KEY = credentials('heroku_api_key')
-                        }
-                        steps {
-                                script {
-                                        sh '''
-                                                heroku container:login
-                                                heroku create $PRODUCTION || echo "project already exist"
-                                                heroku container:push -a $PRODUCTION web
-                                                heroku container:release -a $PRODUCTION web
-                                        '''
-                                }
-                        }
-
-                }
+		/* Docker - test */
+    		stage('DOCKER - check registry'){
+      			withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'myregistry_login',usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+      			sh 'curl -sk --user $USERNAME:$PASSWORD https://192.168.1.64:5000/v2/myapp/tags/list'
+      	 		}
+		}
+	
 
 
 	}
