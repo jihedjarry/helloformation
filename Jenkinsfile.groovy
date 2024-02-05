@@ -76,7 +76,20 @@ pipeline{
                                 }
                         }       
                 }
-
-
+		stage('ANSIBLE - Deploy') {
+			agent any
+			script {
+      				git branch: 'master', url: 'https://github.com/jihedjarry/deploy_helloworld.git'
+      				sh "mkdir -p roles"
+      				sh "ansible-galaxy install --roles-path roles -r requirements.yml"
+      				ansiblePlaybook (
+            				colorized: true,
+            				playbook: "playbook.yml",
+            				hostKeyChecking: false,
+            				inventory: "env/dev/hosts",
+            				extras: "-u jarry -e 'image=$registry:${IMAGE_TAG}' -e 'version=${IMAGE_TAG}'"
+            			)
+    			}
+		}
 	}
 }
