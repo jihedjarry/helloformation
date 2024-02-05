@@ -2,7 +2,7 @@ pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
 		IMAGE_TAG = "latest"
-		imageName_Registry = "192.168.1.64:5000/myapp"
+		imageName_Registry = "192.168.1.38:5000/myapp"
 
 	}
 	agent none
@@ -55,7 +55,7 @@ pipeline{
                 }
 
 		stage('DOCKER - Build/Push registry') {
-                docker.withRegistry('http://192.168.1.64:5000', 'myregistry_login') {
+                docker.withRegistry('http://192.168.1.38:5000', 'myregistry_login') {
                 	def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
                         customImage.push()
          	        }
