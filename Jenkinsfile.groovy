@@ -2,8 +2,7 @@ pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
 		IMAGE_TAG = "latest"
-		STAGING = "jarryjihed-staging"
-		PRODUCTION = "jarryjihed-production"		
+		imageName_Registry = "192.168.1.64:5000/myapp"
 
 	}
 	agent none
@@ -55,14 +54,13 @@ pipeline{
                         }
                 }
 
-		def imageName_Registry='192.168.1.64:5000/myapp'
-
-    		stage('DOCKER - Build/Push registry'){
+		
+    		stage('DOCKER - Build/Push registry') {
       			docker.withRegistry('http://192.168.1.64:5000', 'myregistry_login') {
 			def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
         		customImage.push()
- 		}
-      		sh "docker rmi $imageName_Registry:${IMAGE_TAG}"
+	 		}
+      			sh "docker rmi $imageName_Registry:${IMAGE_TAG}"
     		}
 
 		/* Docker - test */
