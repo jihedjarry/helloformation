@@ -60,6 +60,7 @@ pipeline{
 					docker.withRegistry( 'http://192.168.1.38:5000', registryCredential ) {
                 				def customImage = docker.build("$registry:${IMAGE_TAG}")
                         			customImage.push()
+					}
          	        	}
                 	}	
 		}
