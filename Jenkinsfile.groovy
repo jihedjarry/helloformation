@@ -69,7 +69,7 @@ pipeline{
 			agent any
                         steps{
                                 script {
-                                	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'myregistry_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                                	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: registryCredential, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
       						sh 'curl -sk --user $USERNAME:$PASSWORD https://192.168.1.38:5000/v2/helloworld/tags/list'
       					}
                                 }
