@@ -1,7 +1,7 @@
 pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
-		IMAGE_TAG = "1.0"
+		IMAGE_TAG = "1.1"
 		registry = "192.168.1.38:5000/helloworld"
 		registryCredential = 'myregistry_login'
 	}
