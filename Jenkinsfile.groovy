@@ -2,7 +2,7 @@ pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
 		IMAGE_TAG = "latest"
-		registry = "192.168.1.38:5000/myapp"
+		registry = "192.168.1.64:5000/myapp"
 		registryCredential = 'myregistry_login'
 	}
 	agent none
@@ -57,12 +57,23 @@ pipeline{
 		stage('Deploy our image') {
 			steps{
 				script {
-					docker.withRegistry( 'http://192.168.1.38:5000', registryCredential ) {
+					docker.withRegistry( 'http://192.168.1.64:5000', registryCredential ) {
                 				def customImage = docker.build("$registry:${IMAGE_TAG}")
                         			customImage.push()
 					}
          	        	}
                 	}	
 		}
+		stage('Deploy our image') {
+                        steps{
+                                script {
+                                	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'myregistry_login',usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+      						sh 'curl -sk --user $USERNAME:$PASSWORD https://192.168.1.64:5000/v2/myapp/tags/list'
+      					}
+                                }
+                        }       
+                }
+
+
 	}
 }
