@@ -2,8 +2,8 @@ pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
 		IMAGE_TAG = "latest"
-		imageName_Registry = "192.168.1.38:5000/myapp"
-
+		registry = "192.168.1.38:5000/myapp"
+		registryCredential = 'myregistry_login'
 	}
 	agent none
 
@@ -53,12 +53,15 @@ pipeline{
                                 }
                         }
                 }
-
-		stage('DOCKER - Build/Push registry') {
-                docker.withRegistry('http://192.168.1.38:5000', 'myregistry_login') {
-                	def customImage = docker.build("$imageName_Registry:${IMAGE_TAG}")
-                        customImage.push()
-         	        }
-                }
+		
+		stage('Deploy our image') {
+			steps{
+				script {
+					docker.withRegistry( 'http://192.168.1.38:5000', registryCredential ) {
+                				def customImage = docker.build("$registry:${IMAGE_TAG}")
+                        			customImage.push()
+         	        	}
+                	}	
+		}
 	}
 }
