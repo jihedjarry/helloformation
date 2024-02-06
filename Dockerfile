@@ -23,6 +23,4 @@ USER myuser
 # Run the app.  CMD is required to run on Heroku
 # $PORT is set by Heroku			
 #CMD gunicorn --bind 127.0.0.1:5000 wsgi 
-EXPOSE 8080
-
-CMD ["gunicorn", "app:wsgi"]
+CMD gunicorn --bind 0.0.0.0:5000 wsgi
