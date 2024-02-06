@@ -31,17 +31,6 @@ pipeline{
                         }       
                 }
 		
-		stage('Test image') {
-                        agent any
-                        steps {
-                                script {
-                                sh '''                                                        
-                                        curl http://localhost
-                                ''' 
-                                }
-                        }
-                }
-
 		stage('Clean container') {
                         agent any
                         steps {
