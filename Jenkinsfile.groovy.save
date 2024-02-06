@@ -1,0 +1,97 @@
+pipeline{
+	environment {
+		IMAGE_NAME = "alpinehelloworld"
+		IMAGE_TAG = "latest"
+		registry = "192.168.1.38:5000/helloworld"
+		registryCredential = 'myregistry_login'
+	}
+	agent none
+
+	stages {
+		stage('Build image') {
+			agent any
+			steps {
+				script {
+				sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+
+			
+				}
+			}	
+		}
+		
+		stage('Run container based on builded image') {
+                        agent any
+                        steps {
+                                script { 
+                                sh '''
+					docker run -d -p 80:5000 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
+					sleep 5
+				'''
+				}
+                        }       
+                }
+		
+		stage('Test image') {
+                        agent any
+                        steps {
+                                script {
+                                sh '''                                                        
+                                        curl http://127.0.0.1/
+                                ''' 
+                                }
+                        }
+                }
+
+		stage('Clean container') {
+                        agent any
+                        steps {
+                                script {
+                                sh '''
+                                        docker stop ${IMAGE_NAME}
+					docker rm ${IMAGE_NAME}
+                                '''
+                                }
+                        }
+                }
+		
+		stage('DOCKER - Build/Push registry') {
+			agent any
+			steps{
+				script {
+					docker.withRegistry( 'http://192.168.1.38:5000', registryCredential ) {
+                				def customImage = docker.build("$registry:${IMAGE_TAG}")
+                        			customImage.push()
+					}
+					sh "docker rmi $registry:${IMAGE_TAG}"
+         	        	}
+                	}	
+		}
+		stage('DOCKER - check registry') {
+			agent any
+                        steps{
+                                script {
+                                	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: registryCredential, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+      						sh 'curl -sk --user $USERNAME:$PASSWORD https://192.168.1.38:5000/v2/helloworld/tags/list'
+      					}
+                                }
+                        }       
+                }
+		stage('ANSIBLE - Deploy') {
+			agent any
+			steps{
+				script {
+      					git branch: 'master', url: 'https://github.com/jihedjarry/deploy_helloworld.git'
+      					sh "mkdir -p roles"
+      					sh "ansible-galaxy install --roles-path roles -r requirements.yml"
+      					ansiblePlaybook (
+            					colorized: true,
+            					playbook: "playbook.yml",
+            					hostKeyChecking: false,
+            					inventory: "env/dev/hosts.yml",
+            					extras: "-u jarry -e 'image=$registry:${IMAGE_TAG}' -e 'version=${IMAGE_TAG}'"
+            				)
+				}
+    			}
+		}
+	}
+}
