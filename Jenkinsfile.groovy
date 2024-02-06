@@ -1,7 +1,7 @@
 pipeline{
 	environment {
 		IMAGE_NAME = "alpinehelloworld"
-		IMAGE_TAG = "latest"
+		IMAGE_TAG = "1.0.0"
 		registry = "192.168.1.38:5000/helloworld"
 		registryCredential = 'myregistry_login'
 	}
@@ -30,6 +30,18 @@ pipeline{
 				}
                         }       
                 }
+
+		stage('Test') {
+                        agent any
+                        steps {
+                                script {
+                                sh '''
+                                        curl http://localhost
+                                '''
+                                }
+                        }
+                }
+
 		
 		stage('Clean container') {
                         agent any
